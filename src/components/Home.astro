@@ -1,0 +1,62 @@
+---
+const logoImageSrc = "/assets/logo.jpg";
+---
+
+<div class="welcome-section">
+  <h1 class="title">歡迎光臨</h1>
+  <img src={logoImageSrc} alt="歡迎圖片" class="welcome-image" />
+  <h2 class="subtitle">條子來了</h2>
+</div>
+
+<style>
+  .welcome-section {
+    position: relative; /* 固定在螢幕上方 */
+    top: 0; /* 確保貼齊頂部 */
+    width: 100%; /* 讓區塊橫向填滿 */
+    display: flex;
+    padding: 10px 20px; /* 減少 padding，避免占用太多空間 */
+    align-items: center; /* 讓文字與圖片垂直對齊 */
+    justify-content: center; /* 讓內容居中 */
+    gap: 10px; /* 控制標題與圖片的間距 */
+    background-color: #f7f4f4; /* 背景顏色 */
+    flex-wrap: wrap; /* 讓內容在小螢幕上自動換行 */
+  }
+
+  .title,
+  .subtitle {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 60px; /* 讓文字高度與圖片相同 */
+    white-space: nowrap; /* 防止換行 */
+  }
+
+  .welcome-image {
+    width: 100px; /* 固定圖片寬度 */
+    height: 60px; /* 確保高度與文字一致 */
+    object-fit: contain; /* 讓圖片適應大小但不裁切 */
+    border-radius: 10px;
+  }
+
+  @media screen and (max-width: 480px) {
+    .welcome-section {
+      flex-direction: row; /* 手機版改為直排 */
+    }
+
+    .title,
+    .subtitle {
+      font-size: 1.5rem;
+    }
+
+    .welcome-image {
+      max-width: 50%; /* 手機版的圖片稍微加大 */
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .title,
+    .subtitle {
+      font-size: 2.5rem;
+    }
+  }
+</style>
