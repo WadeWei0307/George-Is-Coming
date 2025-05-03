@@ -1,51 +1,8 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-//Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-//Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
 	<Welcome />
 </Layout>
-
-<header>
-  <h1>歡迎光臨！</h1>
-  <p>快速選擇您的美食 🍽️</p>
-</header>
-<nav>
-  <button>🍔 漢堡</button>
-  <button>🍕 披薩</button>
-  <button>🥤 飲料</button>
-	<button>垃圾食物</button>
-</nav>
-
-<section class="menu">
-  <div class="item">
-    <img src="burger.jpg" alt="美味漢堡">
-    <h2>美式牛肉漢堡</h2>
-    <p>NT$120</p>
-    <button>加入購物車</button>
-  </div>
-</section>
-
-<section class="cart">
-  <h2>您的購物車</h2>
-  <div class="cart-item">
-    <p>🍔 美式牛肉漢堡 x 2</p>
-    <p>總計: NT$240</p>
-  </div>
-  <button>前往結帳</button>
-</section>
-
-<form class="checkout">
-  <label>姓名：<input type="text"></label>
-  <label>地址：<input type="text"></label>
-  <label>付款方式：
-    <select>
-      <option>Line Pay</option>
-      <option>信用卡</option>
-    </select>
-  </label>
-  <button>提交訂單</button>
-</form>
