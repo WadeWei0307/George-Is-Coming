@@ -1,5 +1,7 @@
 ---
 const logoImageSrc = "/assets/logo.jpg";
+
+let menuOpen = false;
 ---
 
 <div class="welcome-section">
@@ -8,17 +10,125 @@ const logoImageSrc = "/assets/logo.jpg";
   <h2 class="subtitle">條子來了</h2>
 </div>
 
+<div class="nav-container">
+  <button class="menu-toggle">☰</button>
+</div>
+
+<div class="drawer">
+  <ul class="menu-list">
+    <li><a href="/">菜單</a></li>
+    <li><a href="/contact">聯絡我們</a></li>
+  </ul>
+</div>
+
+<script>
+  window.addEventListener("load", () => {
+    const menuButton = document.querySelector(".menu-toggle") as HTMLElement;
+    const drawer = document.querySelector(".drawer");
+    const body = document.querySelector("body"); // 監聽整個畫面
+
+    if (!menuButton || !drawer || !body) {
+      console.error("menuButton 或 drawer 未找到");
+      return;
+    }
+
+    menuButton.addEventListener("click", () => {
+      drawer.classList.toggle("open");
+      menuButton.style.display = drawer.classList.contains("open")
+        ? "none"
+        : "block";
+    });
+
+    body.addEventListener("click", (event) => {
+      if (
+        drawer.classList.contains("open") &&
+        !drawer.contains(event.target as Node) &&
+        !menuButton.contains(event.target as Node)
+      ) {
+        drawer.classList.remove("open");
+        menuButton.style.display = "block";
+      }
+    });
+  });
+</script>
+
 <style>
+  .nav-container {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1000;
+    background: rgb(173, 69, 69);
+  }
+
+  .menu-toggle {
+    font-size: 20px;
+    background: rgb(255, 255, 255);
+    border: none;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 0px;
+    z-index: 2000;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .drawer {
+    position: fixed;
+    top: 0;
+    left: 0px; /* 確保它停在左側 */
+    width: auto;
+    max-width: 80vw; /* 避免過大 */
+    height: 100vh;
+    background: rgb(177, 50, 50);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    opacity: 0; /* 初始透明 */
+    transform: translateX(-100%);
+    transition:
+      opacity 0.5s ease-in-out,
+      transform 0.5s ease-in-out;
+  }
+
+  .drawer.open {
+    opacity: 1; /* 淡入效果 */
+    transform: translateX(0); /* 滑入效果 */
+  }
+
+  .menu-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .menu-list li {
+    margin: 15px 0;
+    padding: 10px 0;
+    border-bottom: 2px solid #ccc; /* 添加分隔線 */
+  }
+
+  /* 最後一個項目不需要分隔線 */
+  .menu-list li:last-child {
+    border-bottom: none;
+  }
+
+  .menu-list a {
+    text-decoration: none;
+    color: #333;
+    font-size: 20px;
+  }
+
   .welcome-section {
     position: relative; /* 固定在螢幕上方 */
     top: 0; /* 確保貼齊頂部 */
     width: 100%; /* 讓區塊橫向填滿 */
     display: flex;
-    padding: 10px 20px; /* 減少 padding，避免占用太多空間 */
+    padding: -10px -10px; /* 減少 padding，避免占用太多空間 */
     align-items: center; /* 讓文字與圖片垂直對齊 */
     justify-content: center; /* 讓內容居中 */
-    gap: 10px; /* 控制標題與圖片的間距 */
-    background-color: #f7f4f4; /* 背景顏色 */
+    gap: 0px; /* 控制標題與圖片的間距 */
+    background-color: #aa5524; /* 背景顏色 */
     flex-wrap: wrap; /* 讓內容在小螢幕上自動換行 */
   }
 
@@ -27,15 +137,14 @@ const logoImageSrc = "/assets/logo.jpg";
     font-size: 2rem;
     font-weight: bold;
     color: #333;
-    line-height: 60px; /* 讓文字高度與圖片相同 */
+    line-height: 40px; /* 讓文字高度與圖片相同 */
     white-space: nowrap; /* 防止換行 */
   }
 
   .welcome-image {
     width: 100px; /* 固定圖片寬度 */
-    height: 60px; /* 確保高度與文字一致 */
+    height: 40px; /* 確保高度與文字一致 */
     object-fit: contain; /* 讓圖片適應大小但不裁切 */
-    border-radius: 10px;
   }
 
   @media screen and (max-width: 480px) {
@@ -50,6 +159,10 @@ const logoImageSrc = "/assets/logo.jpg";
 
     .welcome-image {
       max-width: 50%; /* 手機版的圖片稍微加大 */
+    }
+
+    .menu-list {
+      width: 120px;
     }
   }
 
