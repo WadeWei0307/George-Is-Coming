@@ -1,40 +1,81 @@
 ---
 const logoImageSrc = "/assets/logo.jpg";
-
-let menuOpen = false;
+const menuItems = [
+  { img: "/assets/menu1.jpg", name: "豬條子", price: "$180" },
+  { img: "/assets/menu1.jpg", name: "魚條子", price: "$120" },
+  { img: "/assets/menu1.jpg", name: "雞條子", price: "$90" },
+  { img: "/assets/menu1.jpg", name: "牛條子", price: "$45" },
+  { img: "/assets/menu1.jpg", name: "狗條子", price: "$100000" },
+];
 ---
 
+<!-- logo and welcome -->
 <div class="welcome-section">
   <h1 class="title">歡迎光臨</h1>
   <img src={logoImageSrc} alt="歡迎圖片" class="welcome-image" />
   <h2 class="subtitle">條子來了</h2>
 </div>
 
+<!-- navigation menu button -->
 <div class="nav-container">
-  <button class="menu-toggle">☰</button>
+  <button class="nav-toggle">☰</button>
 </div>
 
+<!-- pop out navigation menu -->
 <div class="drawer">
-  <ul class="menu-list">
-    <li><a href="/">菜單</a></li>
-    <li><a href="/contact">聯絡我們</a></li>
+  <ul class="nav-list">
+    <li><a href="#menu-section">菜單</a></li>
+    <li><a href="#contact-section">聯絡我們</a></li>
   </ul>
+</div>
+
+<!-- menu list and price and image -->
+<div id="menu-section" class="menu-section">
+  {
+    menuItems.map((item) => (
+      <div class="menu-item">
+        <img src={item.img} alt={item.name} class="menu-image" />
+        <div class="menu-details">
+          <h3 class="menu-name">{item.name}</h3>
+          <p class="menu-price">{item.price}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<!-- 聯絡方式 -->
+<div id="contact-section" class="contact-section">
+  <h2>聯絡我們</h2>
+  <p>電話：0987-654-321</p>
+  <p>地址：台北市中正區某街 123 號</p>
+  <p>電子郵件：contact@tiaozilai.com</p>
 </div>
 
 <script>
   window.addEventListener("load", () => {
-    const menuButton = document.querySelector(".menu-toggle") as HTMLElement;
+    const navButton = document.querySelector(".nav-toggle") as HTMLElement;
     const drawer = document.querySelector(".drawer");
+    const navMenuList = document.querySelectorAll(".nav-list a");
+    const menuList = document.querySelector("#menu-section");
+    const contactSection = document.querySelector("#contact-section");
     const body = document.querySelector("body"); // 監聽整個畫面
 
-    if (!menuButton || !drawer || !body) {
-      console.error("menuButton 或 drawer 未找到");
+    if (
+      !navButton ||
+      !drawer ||
+      !navMenuList.length ||
+      !contactSection ||
+      !menuList ||
+      !body
+    ) {
+      console.error("部分元素未找到，請檢查 HTML 結構");
       return;
     }
 
-    menuButton.addEventListener("click", () => {
+    navButton.addEventListener("click", () => {
       drawer.classList.toggle("open");
-      menuButton.style.display = drawer.classList.contains("open")
+      navButton.style.display = drawer.classList.contains("open")
         ? "none"
         : "block";
     });
@@ -43,16 +84,89 @@ let menuOpen = false;
       if (
         drawer.classList.contains("open") &&
         !drawer.contains(event.target as Node) &&
-        !menuButton.contains(event.target as Node)
+        !navButton.contains(event.target as Node)
       ) {
         drawer.classList.remove("open");
-        menuButton.style.display = "block";
+        navButton.style.display = "block";
       }
+    });
+
+    navMenuList.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const targetId = link.getAttribute("href");
+        if (targetId === "#menu-section") {
+          event.preventDefault();
+          menuList.scrollIntoView({ behavior: "smooth" });
+        } else if (targetId === "#contact-section") {
+          event.preventDefault();
+          contactSection.scrollIntoView({ behavior: "smooth" });
+        }
+        // 關閉 drawer
+        drawer.classList.remove("open");
+        navButton.style.display = "block";
+      });
     });
   });
 </script>
 
 <style>
+  .contact-section {
+    padding: 5px;
+    background: #eee;
+    text-align: center;
+  }
+
+  .contact-section h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .contact-section p {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  .menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .menu-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+
+  .menu-details {
+    flex: 1;
+    position: relative; /* 設定相對位置 */
+  }
+
+  .menu-name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .menu-price {
+    font-size: 18px;
+    color: #d35400;
+    position: absolute; /* 讓價格固定在 menu-details 內部 */
+    bottom: 5px;
+    right: 5px;
+  }
+
   .nav-container {
     position: fixed;
     top: 0px;
@@ -61,7 +175,7 @@ let menuOpen = false;
     background: rgb(173, 69, 69);
   }
 
-  .menu-toggle {
+  .nav-toggle {
     font-size: 20px;
     background: rgb(255, 255, 255);
     border: none;
@@ -97,23 +211,23 @@ let menuOpen = false;
     transform: translateX(0); /* 滑入效果 */
   }
 
-  .menu-list {
+  .nav-list {
     list-style: none;
     padding: 0;
   }
 
-  .menu-list li {
+  .nav-list li {
     margin: 15px 0;
     padding: 10px 0;
     border-bottom: 2px solid #ccc; /* 添加分隔線 */
   }
 
   /* 最後一個項目不需要分隔線 */
-  .menu-list li:last-child {
+  .nav-list li:last-child {
     border-bottom: none;
   }
 
-  .menu-list a {
+  .nav-list a {
     text-decoration: none;
     color: #333;
     font-size: 20px;
