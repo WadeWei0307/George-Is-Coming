@@ -12,6 +12,10 @@ const menuItems = [
 <!-- logo and welcome -->
 <div class="welcome-section">
   <img src={logoImageSrc} alt="歡迎圖片" class="welcome-image" />
+  <!-- 公告區 -->
+  <div class="announcement">
+    <p>🔥 本週優惠：第二份半價！🔥</p>
+  </div>
 </div>
 
 <!-- menu list and price and image -->
@@ -55,9 +59,9 @@ const menuItems = [
   }
 
   .menu-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 每行 2 欄 */
+    gap: 20px; /* 每個 menu-item 間距 */
     padding: 20px;
   }
 
@@ -107,6 +111,19 @@ const menuItems = [
     flex-wrap: wrap; /* 讓內容在小螢幕上自動換行 */
   }
 
+  .announcement {
+  width: 100%;
+  text-align: center;
+  background-color: #ffeeba;
+  color: #856404;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border-top: 1px solid #ffd966;
+  border-bottom: 1px solid #ffd966;
+}
+
+
   .title,
   .subtitle {
     font-size: 2rem;
@@ -140,6 +157,13 @@ const menuItems = [
       width: 120px;
     }
   }
+
+  @media screen and (max-width: 600px) {
+    .menu-section {
+      grid-template-columns: 1fr; /* 手機版：單欄顯示 */
+    }
+  }
+
 
   @media screen and (min-width: 768px) {
     .title,
