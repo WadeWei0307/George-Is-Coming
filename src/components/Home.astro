@@ -1,0 +1,174 @@
+---
+const logoImageSrc = "/assets/normalLogo.jpeg";
+const menuItems = [
+  { img: "/assets/menu1.jpg", name: "豬條子", price: "$180" },
+  { img: "/assets/menu1.jpg", name: "魚條子", price: "$120" },
+  { img: "/assets/menu1.jpg", name: "雞條子", price: "$90" },
+  { img: "/assets/menu1.jpg", name: "牛條子", price: "$45" },
+  { img: "/assets/menu1.jpg", name: "狗條子", price: "$100000" },
+];
+---
+
+<!-- logo and welcome -->
+<div class="welcome-section">
+  <img src={logoImageSrc} alt="歡迎圖片" class="welcome-image" />
+  <!-- 公告區 -->
+  <div class="announcement">
+    <p>🔥 本週優惠：第二份半價！🔥</p>
+  </div>
+</div>
+
+<!-- menu list and price and image -->
+<div id="menu-section" class="menu-section">
+  {
+    menuItems.map((item) => (
+      <div class="menu-item">
+        <img src={item.img} alt={item.name} class="menu-image" />
+        <div class="menu-details">
+          <h3 class="menu-name">{item.name}</h3>
+          <p class="menu-price">{item.price}</p>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<!-- 聯絡方式 -->
+<div id="contact-section" class="contact-section">
+  <h2>聯絡我們</h2>
+  <p>電話：0987-654-321</p>
+  <p>地址：台北市中正區某街 123 號</p>
+  <p>電子郵件：contact@tiaozilai.com</p>
+</div>
+
+<style>
+  .contact-section {
+    padding: 5px;
+    background: #eee;
+    text-align: center;
+  }
+
+  .contact-section h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .contact-section p {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  .menu-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 每行 2 欄 */
+    gap: 20px; /* 每個 menu-item 間距 */
+    padding: 20px;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .menu-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+
+  .menu-details {
+    flex: 1;
+    position: relative; /* 設定相對位置 */
+  }
+
+  .menu-name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .menu-price {
+    font-size: 18px;
+    color: #d35400;
+    position: absolute; /* 讓價格固定在 menu-details 內部 */
+    bottom: 5px;
+    right: 5px;
+  }
+
+  .welcome-section {
+    position: relative; /* 固定在螢幕上方 */
+    top: 0; /* 確保貼齊頂部 */
+    width: 100%; /* 讓區塊橫向填滿 */
+    display: flex;
+    align-items: center; /* 讓文字與圖片垂直對齊 */
+    justify-content: center; /* 讓內容居中 */
+    gap: 0px; /* 控制標題與圖片的間距 */
+    background-color: #ffffff; /* 背景顏色 */
+    flex-wrap: wrap; /* 讓內容在小螢幕上自動換行 */
+  }
+
+  .announcement {
+  width: 100%;
+  text-align: center;
+  background-color: #ffeeba;
+  color: #856404;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border-top: 1px solid #ffd966;
+  border-bottom: 1px solid #ffd966;
+}
+
+
+  .title,
+  .subtitle {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 40px; /* 讓文字高度與圖片相同 */
+    white-space: nowrap; /* 防止換行 */
+  }
+
+  .welcome-image {
+    width: 100px; /* 固定圖片寬度 */
+    height: 40px; /* 確保高度與文字一致 */
+    object-fit: contain; /* 讓圖片適應大小但不裁切 */
+  }
+
+  @media screen and (max-width: 480px) {
+    .welcome-section {
+      flex-direction: row; /* 手機版改為直排 */
+    }
+
+    .title,
+    .subtitle {
+      font-size: 1.5rem;
+    }
+
+    .welcome-image {
+      max-width: 50%; /* 手機版的圖片稍微加大 */
+    }
+
+    .menu-list {
+      width: 120px;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .menu-section {
+      grid-template-columns: 1fr; /* 手機版：單欄顯示 */
+    }
+  }
+
+
+  @media screen and (min-width: 768px) {
+    .title,
+    .subtitle {
+      font-size: 2.5rem;
+    }
+  }
+</style>
