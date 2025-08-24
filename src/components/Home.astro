@@ -1,5 +1,5 @@
 ---
-const logoImageSrc = "/assets/logo.jpg";
+const logoImageSrc = "/assets/normalLogo.jpeg";
 const menuItems = [
   { img: "/assets/menu1.jpg", name: "豬條子", price: "$180" },
   { img: "/assets/menu1.jpg", name: "魚條子", price: "$120" },
@@ -11,22 +11,7 @@ const menuItems = [
 
 <!-- logo and welcome -->
 <div class="welcome-section">
-  <h1 class="title">歡迎光臨</h1>
   <img src={logoImageSrc} alt="歡迎圖片" class="welcome-image" />
-  <h2 class="subtitle">條子來了</h2>
-</div>
-
-<!-- navigation menu button -->
-<div class="nav-container">
-  <button class="nav-toggle">☰</button>
-</div>
-
-<!-- pop out navigation menu -->
-<div class="drawer">
-  <ul class="nav-list">
-    <li><a href="#menu-section">菜單</a></li>
-    <li><a href="#contact-section">聯絡我們</a></li>
-  </ul>
 </div>
 
 <!-- menu list and price and image -->
@@ -51,63 +36,6 @@ const menuItems = [
   <p>地址：台北市中正區某街 123 號</p>
   <p>電子郵件：contact@tiaozilai.com</p>
 </div>
-
-<script>
-  window.addEventListener("load", () => {
-    const navButton = document.querySelector(".nav-toggle") as HTMLElement;
-    const drawer = document.querySelector(".drawer");
-    const navMenuList = document.querySelectorAll(".nav-list a");
-    const menuList = document.querySelector("#menu-section");
-    const contactSection = document.querySelector("#contact-section");
-    const body = document.querySelector("body"); // 監聽整個畫面
-
-    if (
-      !navButton ||
-      !drawer ||
-      !navMenuList.length ||
-      !contactSection ||
-      !menuList ||
-      !body
-    ) {
-      console.error("部分元素未找到，請檢查 HTML 結構");
-      return;
-    }
-
-    navButton.addEventListener("click", () => {
-      drawer.classList.toggle("open");
-      navButton.style.display = drawer.classList.contains("open")
-        ? "none"
-        : "block";
-    });
-
-    body.addEventListener("click", (event) => {
-      if (
-        drawer.classList.contains("open") &&
-        !drawer.contains(event.target as Node) &&
-        !navButton.contains(event.target as Node)
-      ) {
-        drawer.classList.remove("open");
-        navButton.style.display = "block";
-      }
-    });
-
-    navMenuList.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const targetId = link.getAttribute("href");
-        if (targetId === "#menu-section") {
-          event.preventDefault();
-          menuList.scrollIntoView({ behavior: "smooth" });
-        } else if (targetId === "#contact-section") {
-          event.preventDefault();
-          contactSection.scrollIntoView({ behavior: "smooth" });
-        }
-        // 關閉 drawer
-        drawer.classList.remove("open");
-        navButton.style.display = "block";
-      });
-    });
-  });
-</script>
 
 <style>
   .contact-section {
@@ -167,82 +95,15 @@ const menuItems = [
     right: 5px;
   }
 
-  .nav-container {
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    z-index: 1000;
-    background: rgb(173, 69, 69);
-  }
-
-  .nav-toggle {
-    font-size: 20px;
-    background: rgb(255, 255, 255);
-    border: none;
-    cursor: pointer;
-    position: fixed;
-    top: 20px;
-    left: 0px;
-    z-index: 2000;
-    padding: 5px 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-
-  .drawer {
-    position: fixed;
-    top: 0;
-    left: 0px; /* 確保它停在左側 */
-    width: auto;
-    max-width: 80vw; /* 避免過大 */
-    height: 100vh;
-    background: rgb(177, 50, 50);
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    opacity: 0; /* 初始透明 */
-    transform: translateX(-100%);
-    transition:
-      opacity 0.5s ease-in-out,
-      transform 0.5s ease-in-out;
-  }
-
-  .drawer.open {
-    opacity: 1; /* 淡入效果 */
-    transform: translateX(0); /* 滑入效果 */
-  }
-
-  .nav-list {
-    list-style: none;
-    padding: 0;
-  }
-
-  .nav-list li {
-    margin: 15px 0;
-    padding: 10px 0;
-    border-bottom: 2px solid #ccc; /* 添加分隔線 */
-  }
-
-  /* 最後一個項目不需要分隔線 */
-  .nav-list li:last-child {
-    border-bottom: none;
-  }
-
-  .nav-list a {
-    text-decoration: none;
-    color: #333;
-    font-size: 20px;
-  }
-
   .welcome-section {
     position: relative; /* 固定在螢幕上方 */
     top: 0; /* 確保貼齊頂部 */
     width: 100%; /* 讓區塊橫向填滿 */
     display: flex;
-    padding: -10px -10px; /* 減少 padding，避免占用太多空間 */
     align-items: center; /* 讓文字與圖片垂直對齊 */
     justify-content: center; /* 讓內容居中 */
     gap: 0px; /* 控制標題與圖片的間距 */
-    background-color: #aa5524; /* 背景顏色 */
+    background-color: #ffffff; /* 背景顏色 */
     flex-wrap: wrap; /* 讓內容在小螢幕上自動換行 */
   }
 
