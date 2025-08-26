@@ -139,8 +139,16 @@ const menuItems = [
 
     if (!spicyEl || !qtyEl || !currentItem) return;
 
-    const spicy = spicyEl.value;
     const qty = parseInt(qtyEl.value, 10);
+    // 檢查數量是否有效
+    if (isNaN(qty) || qty < 1) {
+      alert("請輸入有效的數量（數字且大於等於 1）");
+      // 回到原先畫面，不關閉 modal
+      qtyEl.focus();
+      return;
+    }
+
+    const spicy = spicyEl.value;
     const total = currentItem.price * qty;
 
     if (editIndex !== null) {
