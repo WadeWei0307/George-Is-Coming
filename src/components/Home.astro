@@ -18,19 +18,58 @@ const menuItems = [
   </div>
 </div>
 
-<!-- menu list and price and image -->
+<!-- menu list -->
 <div id="menu-section" class="menu-section">
-  {
-    menuItems.map((item) => (
-      <div class="menu-item">
-        <img src={item.img} alt={item.name} class="menu-image" />
-        <div class="menu-details">
-          <h3 class="menu-name">{item.name}</h3>
-          <p class="menu-price">{item.price}</p>
-        </div>
+  { menuItems.map((item, index) => (
+    <div class="menu-item" data-name={item.name} data-price={item.price.replace('$', '')}>
+      <img src={item.img} alt={item.name} class="menu-image" />
+      <div class="menu-details">
+        <h3 class="menu-name">{item.name}</h3>
+        <p class="menu-price">{item.price}</p>
       </div>
-    ))
-  }
+    </div>
+  )) }
+</div>
+
+<!-- 編輯 / 新增共用 modal -->
+<div id="modal" class="modal hidden">
+  <div class="modal-content modal-edit">
+    <h2 id="modal-name">品項名稱</h2>
+    <label>
+      辣度：
+      <select id="spicy">
+        <option value="不辣">不辣</option>
+        <option value="小辣">小辣</option>
+        <option value="中辣">中辣</option>
+        <option value="大辣">大辣</option>
+      </select>
+    </label>
+    <br />
+    <label>
+      份數：
+      <input type="number" id="quantity" min="1" value="1" />
+    </label>
+    <br />
+    <button id="modal-confirm-btn">加入購物車</button>
+    <button id="modal-cancel-btn">取消</button>
+  </div>
+</div>
+
+<!-- 結帳顯示在下方 -->
+<div id="cart-section" class="cart-section">
+  <span id="total-price">總金額：$0</span>
+  <button class="checkout-btn">購物車</button>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkout-modal" class="modal hidden">
+  <div class="modal-content modal-checkout">
+    <h2>購物車</h2>
+    <div id="checkout-eachItems" class = "checkout-items"></div>
+    <div id="checkout-total">總金額：$0</div>
+    <button id="pay-btn">付款</button>
+    <button id="checkout-close">關閉</button>
+  </div>
 </div>
 
 <!-- 聯絡方式 -->
@@ -41,11 +80,189 @@ const menuItems = [
   <p>電子郵件：contact@tiaozilai.com</p>
 </div>
 
-<style>
+<script>
+  /*cart function*/
+  interface MenuItem {
+    img: string;
+    name: string;
+    price: number;
+  }
+
+  interface CartItem extends MenuItem {
+    spicy: string;
+    qty: number;
+    total: number;
+  }
+
+  const confirmBtn = document.getElementById("modal-confirm-btn") as HTMLButtonElement;
+  const cancelBtn = document.getElementById("modal-cancel-btn") as HTMLButtonElement;
+
+  let currentItem: MenuItem | null = null;
+  let cart: CartItem[] = [];
+  let editIndex: number | null = null; // null 表示新增，非 null 表示正在編輯哪一筆
+
+  
+  document.querySelectorAll(".menu-item").forEach(el => {
+    el.addEventListener("click", () => openModal(el as HTMLElement));
+  });
+
+  function openModal(el: HTMLElement) {
+    const name = el.getAttribute("data-name")!;
+    const price = parseInt(el.getAttribute("data-price")!, 10);
+
+    currentItem = { img: "", name, price };
+    editIndex = null; // 新增模式
+    document.getElementById("modal-name")!.innerText = name;
+    confirmBtn.innerText = "加入購物車"; // 新增模式文字
+
+      // 每次開起modal都會重製成default option
+    (document.getElementById("quantity") as HTMLInputElement).value = "1";
+    (document.getElementById("spicy") as HTMLSelectElement).value = "不辣";
+    document.getElementById("modal")!.classList.remove("hidden");
+
+    confirmBtn.onclick = addToCart;
+    cancelBtn.onclick = closeModal;
+  }
+
+  function closeModal() {
+    document.getElementById("modal")!.classList.add("hidden");
+  }
+
+  function updateCart() {
+    const total = cart.reduce((sum, item) => sum + item.total, 0);
+    (document.getElementById("total-price") as HTMLElement).innerText = "總金額：$" + total;
+  }
+
+  function addToCart() {
+    const spicyEl = document.getElementById("spicy") as HTMLSelectElement | null;
+    const qtyEl = document.getElementById("quantity") as HTMLInputElement | null;
+
+    if (!spicyEl || !qtyEl || !currentItem) return;
+
+    const spicy = spicyEl.value;
+    const qty = parseInt(qtyEl.value, 10);
+    const total = currentItem.price * qty;
+
+    if (editIndex !== null) {
+    // 編輯模式 -> 更新原本 cart
+      cart[editIndex] = { ...currentItem, spicy, qty, total };
+    } else {
+      // 新增模式
+      cart.push({ ...currentItem, spicy, qty, total });
+    }
+    updateCart();
+    renderCheckoutItems();
+
+    // 重置編輯狀態
+    editIndex = null;
+
+    // 關閉 modal 並回到 checkout 或一般頁面
+    document.getElementById("modal")!.classList.add("hidden");
+    if (checkoutModal.classList.contains("hidden") === false) {
+      checkoutModal.classList.remove("hidden"); // 編輯時回到 checkout
+    }
+  }
+
+  /*checkout function*/
+  const cartSection = document.getElementById("cart-section")!;
+  const checkoutModal = document.getElementById("checkout-modal")!;
+  const checkoutItems = document.getElementById("checkout-eachItems")!;
+  const checkoutTotal = document.getElementById("checkout-total")!;
+  const payBtn = document.getElementById("pay-btn")!;
+  const checkoutClose = document.getElementById("checkout-close")!;
+
+  function renderCheckoutItems() {
+    checkoutItems.innerHTML = "";
+    cart.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.className = "checkout-item";
+      div.innerHTML = `
+        <div class="button-group">
+          <button class="edit-btn">編輯</button>
+          <button class="delete-btn">刪除</button>
+        </div>
+        <div class="item-info">
+          <strong>${item.name}</strong> | 辣度: ${item.spicy} | 數量: ${item.qty} | 小計: $${item.total}
+        </div>
+      `;
+      // 編輯
+      div.querySelector(".edit-btn")!.addEventListener("click", () => {
+        checkoutModal.classList.add("hidden");
+        openModalByCartItem(index);
+      });
+      // 刪除
+      div.querySelector(".delete-btn")!.addEventListener("click", () => {
+        cart.splice(index, 1);
+        renderCheckoutItems();
+        updateCart();
+      });
+      checkoutItems.appendChild(div);
+    });
+
+    const total = cart.reduce((sum, item) => sum + item.total, 0);
+    checkoutTotal.innerText = "總金額：$" + total;
+  }
+
+  // 由 checkout 編輯
+  function openModalByCartItem(index: number) {
+    const item = cart[index];
+    currentItem = { ...item };
+    editIndex = index; // 編輯模式
+    document.getElementById("modal-name")!.innerText = item.name;
+    (document.getElementById("spicy") as HTMLSelectElement).value = item.spicy;
+    (document.getElementById("quantity") as HTMLInputElement).value = String(item.qty);
+
+    confirmBtn.innerText = "更新購物車"; // 編輯模式文字
+    cancelBtn.innerText = "關閉"; // 編輯模式文字
+
+    document.getElementById("modal")!.classList.remove("hidden");
+
+    confirmBtn.onclick = () => {
+      const spicyEl = document.getElementById("spicy") as HTMLSelectElement;
+      const qtyEl = document.getElementById("quantity") as HTMLInputElement;
+      const qty = parseInt(qtyEl.value, 10);
+      const spicy = spicyEl.value;
+      const total = currentItem!.price * qty;
+
+      cart[editIndex!] = { ...currentItem!, spicy, qty, total };
+      updateCart();
+      renderCheckoutItems();
+
+      // 關閉 modal 並回到 checkout
+      document.getElementById("modal")!.classList.add("hidden");
+      checkoutModal.classList.remove("hidden");
+
+      // 重置編輯狀態
+      editIndex = null;
+      confirmBtn.innerText = "加入購物車"; // 下次回到新增模式
+      cancelBtn.innerText = "取消";
+    };
+
+    cancelBtn.onclick = () => {
+      document.getElementById("modal")!.classList.add("hidden");
+      checkoutModal.classList.remove("hidden"); // 編輯時按關閉回到 checkout
+      editIndex = null;
+      confirmBtn.innerText = "加入購物車"; // 重置
+      cancelBtn.innerText = "取消";
+    };
+  }
+
+  // 打開結帳視窗
+  cartSection.querySelector(".checkout-btn")!.addEventListener("click", () => {
+    renderCheckoutItems();
+    checkoutModal.classList.remove("hidden");
+  });
+  // 關閉結帳視窗
+  checkoutClose.addEventListener("click", () => checkoutModal.classList.add("hidden"));
+
+</script>
+
+<style is:global>
   .contact-section {
     padding: 5px;
     background: #eee;
     text-align: center;
+    padding-bottom: 80px; /* 預留給 cart-section */
   }
 
   .contact-section h2 {
@@ -112,17 +329,16 @@ const menuItems = [
   }
 
   .announcement {
-  width: 100%;
-  text-align: center;
-  background-color: #ffeeba;
-  color: #856404;
-  padding: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  border-top: 1px solid #ffd966;
-  border-bottom: 1px solid #ffd966;
-}
-
+    width: 100%;
+    text-align: center;
+    background-color: #ffeeba;
+    color: #856404;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border-top: 1px solid #ffd966;
+    border-bottom: 1px solid #ffd966;
+  }
 
   .title,
   .subtitle {
@@ -137,6 +353,93 @@ const menuItems = [
     width: 100px; /* 固定圖片寬度 */
     height: 40px; /* 確保高度與文字一致 */
     object-fit: contain; /* 讓圖片適應大小但不裁切 */
+  }
+
+  /* Modal 樣式 */
+  .modal {
+    position: fixed;
+    top: 0; left: 0; right:0; bottom:0;
+    display: flex; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.5);
+    overflow: auto;
+  }
+  .modal.hidden { display: none; }
+
+  /* 新增/編輯 modal */
+  .modal-edit {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;  /* 文字置中沒問題 */
+  }
+
+  /* 購物車 modal */
+  .modal-checkout {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-height: 400px;  /* 可滾動 */
+    overflow-y: auto;
+  }
+
+  /* 購物車固定區 */
+  .cart-section {
+    position: relative;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-top: 2px solid #ddd;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: env(safe-area-inset-bottom); /* 適配摺疊螢幕/手機瀏海 */
+  }
+  .checkout-btn {
+    background: #ff6600; color: white;
+    padding: 8px 15px; border: none; border-radius: 5px;
+  }
+
+  .checkout-item {
+    padding: 15px;                     /* 內距 */
+    margin-bottom: 15px;               /* 與下方格子距離 */
+    border-radius: 10px;               /* 圓角 */
+    background: #fff;                   /* 背景色可以用白色或漸層 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 陰影讓它浮起來 */
+    border: 1px solid #ddd;            /* 細邊框 */
+    position: relative;
+  }
+
+  .checkout-item .button-group {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+  }
+
+  .checkout-item .button-group button {
+    padding: 3px 6px;
+    font-size: 14px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .checkout-item .button-group .edit-btn {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .checkout-item .button-group .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+  }
+
+  .checkout-item .item-info {
+    margin-top: 20px; /* 避開右上角按鈕 */
+    font-size: 16px;
+    line-height: 1;
   }
 
   @media screen and (max-width: 480px) {
@@ -155,6 +458,12 @@ const menuItems = [
 
     .menu-list {
       width: 120px;
+    }
+
+    .checkout-item .edit-btn,
+    .checkout-item .delete-btn {
+      font-size: 12px;
+      padding: 2px 5px;
     }
   }
 
